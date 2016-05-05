@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/KNN_TEST.iml" filepath="$PROJECT_DIR$/KNN_TEST.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Knn_localization/Knn_localization.iml" filepath="$PROJECT_DIR$/Knn_localization/Knn_localization.iml" />
+    </modules>
+  </component>
+</project>

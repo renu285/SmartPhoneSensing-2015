@@ -1,0 +1,344 @@
+package com.example.renu.jan_test;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
+import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.TextView;
+import android.widget.Toast;
+
+//import org.w3c.dom.Text;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class MainActivity extends AppCompatActivity {
+
+    Button buttonMeasure, buttonDetermine;
+    //RadioButton radioA, radioB;
+    //private WifiManager wifiManager;
+    private TextView textRssi, textCounter1, textCounter2;
+    private TextView Cell;
+    private int pointCounter = 1;
+    private int counter1 = 0;
+    private int counter2 = 0;
+    private int roomCounter = 0;
+    private double sigma = 0;
+    private double mean = 0;
+    private int meanCouter = 0;
+    private double mahaDist = 0;
+    //private int eucDist = 0;
+    private double eucDist = 0;
+    int kamer1v = 0;
+    int kamer2v = 0;
+
+    Map<Integer, Integer> roomTree = new HashMap<>();
+    Map<Integer, Double> distanceTree = new HashMap<>();
+    Map<Integer, Integer> numberTree = new HashMap<>();
+
+    File RawValues = new File(Environment.getExternalStorageDirectory(),
+            "Localization/RawValues");  // see if the required folders already exist. >>
+    File APData = new File(Environment.getExternalStorageDirectory(), "Localization/APData");
+
+
+    WifiManager wifi;
+   // WifiReceiver wifiReceiver;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        textRssi = (TextView) findViewById(R.id.viewText);
+        Cell = (TextView) findViewById(R.id.CellText);
+        buttonMeasure = (Button) findViewById(R.id.button);
+        buttonDetermine = (Button) findViewById(R.id.button2);
+
+        /* Initialize the wifiManager */
+        init_wifi();
+
+        buttonMeasure.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                initiate_measurements();
+            }
+        });
+
+        buttonDetermine.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                textRssi.setText(textRssi.getText() + "Starting measurements\n");
+                find_location();
+            }
+        });
+
+    }
+
+
+    void init_wifi() {
+        wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        //wifiReceiver = new WifiReceiver();
+       // registerReceiver(wifiReceiver, new
+        //        IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+
+    }
+
+    void initiate_measurements() {
+
+        if (!RawValues.exists()) {
+            RawValues.mkdirs();
+        }
+        if (!APData.exists()) {
+            APData.mkdirs();
+        }
+        File trainingPointFile = new File(RawValues, "MAC" + String.format("%05d", pointCounter) + ".txt");
+        // Create reference to file
+        pointCounter = 0;
+        while (trainingPointFile.exists())                                                                                                               // Check if it already exist
+        {                                                                                                                                                   // if yes,
+            pointCounter++;                                                                                                                                     // increase the pointCounter
+            trainingPointFile = new File(RawValues, "MAC" + String.format("%05d", pointCounter) + ".txt");                                                    // and try again
+        }
+        FileWriter testWriter;                                                                                                                            // write room number to this file >>
+        try {
+            testWriter = new FileWriter(trainingPointFile, true);
+            testWriter.append(Cell.getText() + "\n");
+            textRssi.setText("\n\tCell value : " + Cell.getText());
+            testWriter.flush();
+            testWriter.close();
+
+            textRssi.setText(textRssi.getText() + "\n\tAdding measurement: " + pointCounter);
+            // wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);                                                                           // Scan the ether and list results...
+            wifi.startScan();
+
+            List<ScanResult> scanResult = wifi.getScanResults();                                                                                     // <<
+            textRssi.setText(textRssi.getText() + "\n\t" + scanResult.size() + "  Stations in vicinity");
+
+            for (int i = 0; i < scanResult.size(); i++) {                                                                                                              // Do for every AP measured.
+                try {
+                    File apFile = new File(APData, scanResult.get(i).BSSID.replaceAll(":", "") + ".txt");                                                           // create new file for this AP (if it doesn't exist yet) >>
+                    FileWriter apWriter;
+                    if (!apFile.exists()) {
+                        apWriter = new FileWriter(apFile);
+                    } else {
+                        apWriter = new FileWriter(apFile, true);
+                    }                                                                                                                                               // <<
+                    apWriter.append(Integer.toString(scanResult.get(i).level) + "\n");                                                                              // and write the strength to it.
+                    apWriter.flush();
+                    apWriter.close();                                                                                                                            // flushed and closed.
+
+
+                    testWriter = new FileWriter(trainingPointFile, true);                                                                                         // now, only append
+                    testWriter.append(scanResult.get(i).BSSID.replaceAll(":", "") + " ");                                                                        // the MAC of the AP and a space
+                    testWriter.append(Integer.toString(scanResult.get(i).level) + "\n");                                                                          // and the level and a string
+                    testWriter.flush();
+                    testWriter.close();
+                    textRssi.setText(textRssi.getText() + "\n\t Recoreded");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    textRssi.setText(e.getMessage().toString());
+                }
+            }
+        } catch (IOException e) {
+            textRssi.setText(e.getMessage().toString());
+        }
+
+
+    }
+
+    double CalculateDistane(int Pa, int Pb) {
+
+        /* calculate Euceldian distance */
+        return Math.sqrt((Pa - Pb)*(Pa - Pb));
+    }
+
+    void knn_classifier(){
+
+
+        int chosenOne = 0;
+        kamer1v = 0;
+        kamer2v = 0;
+        double minste;
+        double laasteMinste = 0;
+        for (int k = 0; k < 5; k++) {
+            minste = 99999;
+            for (int j : distanceTree.keySet()) {
+                if ((distanceTree.get(j) < minste) && (distanceTree.get(j) > laasteMinste)) {
+                    minste = distanceTree.get(j);
+                    chosenOne = j;
+                }
+            }
+            if (roomTree.get(chosenOne) == 1) {
+                kamer1v++;
+            } else if (roomTree.get(chosenOne) == 2) {
+                kamer2v++;
+            }
+            textRssi.setText(textRssi.getText() + "Closest point " + chosenOne + ": " + minste + "\n\t");
+            laasteMinste = minste;
+        }
+        /*
+        if (kamer1v > kamer2v) {
+            Toast.makeText(getBaseContext(), "Location : Cell-1", Toast.LENGTH_SHORT).show();
+            textRssi.setText(textRssi.getText() + "Cell1\n\t");
+            counter1++;
+            // textCounter1.setText(Integer.toString(counter1));
+        } else if (kamer2v > kamer1v) {
+            Toast.makeText(getBaseContext(), "Location : Cell-2", Toast.LENGTH_SHORT).show();
+            textRssi.setText(textRssi.getText() + "Cell2\n\t");
+            counter2++;
+            //textCounter2.setText(Integer.toString(counter2));
+        } else {
+            Toast.makeText(getBaseContext(), "Could not find location", Toast.LENGTH_SHORT).show();
+        }
+        */
+    }
+
+
+
+    void find_location() {
+        textRssi.setText("");
+        FileReader reader;
+        distanceTree.clear();
+        roomTree.clear();
+        numberTree.clear();
+
+        BufferedReader inReader;
+        wifi.startScan();
+        List<ScanResult> scanResult = wifi.getScanResults();
+
+        for (int i = 0; i < scanResult.size(); i++) {  // <<
+            File theMac = new File(Environment.getExternalStorageDirectory(),
+                    "Localization/APData/" + scanResult.get(i).BSSID.replaceAll(":", "") + ".txt");
+            if (theMac.exists()) {
+                try {
+                    reader = new FileReader(theMac);    // open the file
+                    inReader = new BufferedReader(reader);
+                    sigma = 0;
+                    mean = 0;
+                    meanCouter = 0;
+                    String str;
+                    while ((str = inReader.readLine()) != null) {
+                        mean = mean + Double.parseDouble(str);
+                        meanCouter++;
+                    }
+
+                    mean = mean / ((double) meanCouter);
+                    reader = new FileReader(theMac);    // open the file
+                    inReader = new BufferedReader(reader);
+                    while ((str = inReader.readLine()) != null) {
+                        sigma = sigma + Math.pow((Double.parseDouble(str) - mean), 2);
+                    }
+                    sigma = sigma / ((double) meanCouter); // found the standard deviation squared!!
+                    pointCounter = 1;
+                    File thePoint = new File(Environment.getExternalStorageDirectory(),
+                            "Localization/RawValues/MAC" +
+                                    String.format("%05d", pointCounter) + ".txt");
+
+                    while (thePoint.exists()) {
+                        try {
+                            reader = new FileReader(thePoint);
+                            inReader = new BufferedReader(reader);
+                            String str2;
+                            String[] tokens;
+                            roomCounter = Integer.parseInt(inReader.readLine());
+                            while ((str2 = inReader.readLine()) != null) {
+                                tokens = str2.split(" ");
+                                if (tokens[0].equals(scanResult.get(i).BSSID.replaceAll(":", ""))) {
+                                    eucDist = Integer.parseInt(tokens[1]) - scanResult.get(i).level;
+
+                                     //eucDist = CalculateDistane(Integer.parseInt(tokens[1]) *-1,scanResult.get(i).level * -1);
+
+                                    mahaDist = Math.pow((double) eucDist, 2) / sigma;
+                                    if (!distanceTree.containsKey(pointCounter)) {
+                                        distanceTree.put(pointCounter, mahaDist);
+                                        roomTree.put(pointCounter, roomCounter);
+                                        numberTree.put(pointCounter, 1);
+
+                                    } else {
+                                        mahaDist = mahaDist + distanceTree.get(pointCounter);
+                                        distanceTree.put(pointCounter, mahaDist);
+                                        numberTree.put(pointCounter, numberTree.get(pointCounter) + 1);
+                                    }
+                                }
+                            }
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        pointCounter++;
+                        thePoint = new File(Environment.getExternalStorageDirectory(),
+                                "Localization/RawValues/MAC" + String.format("%05d", pointCounter) + ".txt");
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+            }
+
+
+            double intermediateDist;
+            for (int j : distanceTree.keySet()) {
+
+                intermediateDist = distanceTree.get(j);
+                intermediateDist = Math.sqrt(intermediateDist / ((double) numberTree.get(j)) * (double) scanResult.size());
+                distanceTree.put(j, intermediateDist);
+            }
+
+            knn_classifier();
+
+        }
+
+        if (kamer1v > kamer2v) {
+            Toast.makeText(getBaseContext(), "Location : Cell-1", Toast.LENGTH_SHORT).show();
+            textRssi.setText(textRssi.getText() + "Cell1\n\t");
+            counter1++;
+            // textCounter1.setText(Integer.toString(counter1));
+        } else if (kamer2v > kamer1v) {
+            Toast.makeText(getBaseContext(), "Location : Cell-2", Toast.LENGTH_SHORT).show();
+            textRssi.setText(textRssi.getText() + "Cell2\n\t");
+            counter2++;
+            //textCounter2.setText(Integer.toString(counter2));
+        } else {
+            Toast.makeText(getBaseContext(), "Could not find location", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    protected void onResume() {
+        super.onResume();
+    }
+
+    protected void onPause() {
+        super.onPause();
+    }
+
+
+    class WifiReceiver extends BroadcastReceiver {
+        // An access point scan has completed and results are sent here
+        public void onReceive(Context c, Intent intent) {
+
+
+        }
+
+    }
+}
