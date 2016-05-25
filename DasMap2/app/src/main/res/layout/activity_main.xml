@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.dr.dasmap2.MainActivity">
+
+    <TextView
+        android:id="@+id/angleTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Angle: "/>
+
+    <TextView
+        android:id="@+id/angleValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/angleTitle"
+        android:layout_alignBottom="@id/angleTitle" />
+
+    <TextView
+        android:id="@+id/activityTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/angleTitle"
+        android:text="Steps: "/>
+
+    <TextView
+        android:id="@+id/activityStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/activityTitle"
+        android:layout_alignBottom="@id/activityTitle" />
+
+
+
+
+    <RelativeLayout
+        android:id="@+id/imageBorder"
+        android:layout_width="70pt"
+        android:layout_height="302pt"
+        android:background="@drawable/border"
+        android:layout_below="@id/activityTitle">
+
+        <ImageView
+            android:id="@+id/image"
+            android:paddingLeft="20pt"
+            android:layout_width="70pt"
+            android:layout_height="300pt"
+            android:background="@drawable/border"
+            />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/buttonRandomize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/imageBorder"
+        android:layout_alignBottom="@id/activityTitle"
+        android:text="Randomize"/>
+
+    <Button
+        android:id="@+id/buttonMoveUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/buttonRandomize"
+        android:layout_toRightOf="@id/imageBorder"
+        android:layout_marginLeft="40dp"
+        android:text="Up"/>
+
+
+    <Button
+        android:id="@+id/buttonMoveLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageBorder"
+        android:layout_below="@id/buttonMoveUp"
+        android:text="Left"/>
+
+
+    <Button
+        android:id="@+id/buttonMoveRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/buttonMoveLeft"
+        android:layout_alignBottom="@id/buttonMoveLeft"
+        android:text="Right"/>
+
+    <Button
+        android:id="@+id/buttonMoveDown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/buttonMoveLeft"
+        android:layout_alignLeft="@id/buttonMoveUp"
+        android:text="Down"/>
+
+
+</RelativeLayout>
