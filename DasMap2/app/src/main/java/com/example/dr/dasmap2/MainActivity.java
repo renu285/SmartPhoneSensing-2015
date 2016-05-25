@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,30 +26,42 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     //    Views & buttons
-    TextView angleTitle, angleValue, activityTitle, activityStatus;
-    Button buttonRandomize, buttonMoveLeft, buttonMoveRight, buttonMoveUp, buttonMoveDown;
+    TextView angleTitle, angleValue, activityTitle, activityStatus, lastDegreeView, degreesMean;
+    Button buttonRandomize, buttonMoveLeft, buttonMoveRight, buttonMoveUp, buttonMoveDown, buttonSetHeight;
     ImageView mapView;
+    EditText heightView;
 
     //    Sensors
     SensorManager sm;
     Sensor acc, mag, mSensor;
     float azimuth;
     int mAzimuth, degrees;
+    int[] lastDegrees = new int[10];
     
     //    Direction
     float[] mGravity, mGeomagnetic;
     float[] orientation = new float[3];
     float[] rMat = new float[9];
-    
+
+    int mapUp = 70, mapDown = -90;
+    int mapRight = 170, mapLeft = 10;
+    float mean = 0;
+
     //    Activity
     int stepCount;
     boolean lastPeak = true;
+    boolean stepLimiter = true;
+
+    float height = 180;
+    String heightStr = "180";
+    float stepLength = 0.4f*(height/100);
+    float stepLengthDots = stepLength * 8;
     
     //    Particle related
     int n = 500;
     Particle[] particles = new Particle[n];
     Cell[] cells;
-    int[] moving = {0,0,0};
+    float[] moving = {0,0,0};
 
     //    Drawing objects
     Bitmap bg;
@@ -59,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //    Utilities
     Random r;
     Timer timer;
+
+
     
 
     @Override
@@ -70,13 +85,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         angleValue = (TextView) findViewById(R.id.angleValue);
         activityTitle = (TextView) findViewById(R.id.activityTitle);
         activityStatus = (TextView) findViewById(R.id.activityStatus);
+        lastDegreeView = (TextView) findViewById(R.id.lastDegrees);
+        degreesMean = (TextView) findViewById(R.id.degreesMean);
         mapView = (ImageView) findViewById(R.id.image);
+        heightView = (EditText) findViewById(R.id.heightView);
 
         buttonRandomize = (Button) findViewById(R.id.buttonRandomize);
         buttonMoveLeft = (Button) findViewById(R.id.buttonMoveLeft);
         buttonMoveRight = (Button) findViewById(R.id.buttonMoveRight);
         buttonMoveUp = (Button) findViewById(R.id.buttonMoveUp);
         buttonMoveDown = (Button) findViewById(R.id.buttonMoveDown);
+        buttonSetHeight = (Button) findViewById(R.id.buttonSetHeight);
 
         sm = (SensorManager)getSystemService(SENSOR_SERVICE);
         acc = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -92,7 +111,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         canvas = new Canvas(bg);
         paint = new Paint();
         map.drawMap(bg, canvas, mapView);
-        initParticles(particles);
+
+        initStuff();
 
         r = new Random();
 
@@ -103,19 +123,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (moving[0] == 1) {
-                            map.drawMap(bg, canvas, mapView);
-                            for (int i=0; i<particles.length; i++) {
-                                particles[i].cell = map.whichCell(cells, particles[i].getPos()[0], particles[i].getPos()[1]);
-                                particles[i].moveXY(moving[1],moving[2]);
-                            }
-                            drawParticles();
-                            mapView.setBackgroundDrawable(new BitmapDrawable(bg));
+                        if (stepLimiter) {
+                            stepLimiter = false;
                         }
+//                        if (moving[0] == 1) {
+//                            map.drawMap(bg, canvas, mapView);
+//                            for (int i=0; i<particles.length; i++) {
+//                                particles[i].cell = map.whichCell(cells, particles[i].getPos()[0], particles[i].getPos()[1]);
+//                                particles[i].moveXY(moving[1],moving[2]);
+//                            }
+//                            drawParticles();
+//                            mapView.setBackgroundDrawable(new BitmapDrawable(bg));
+//                        }
                     }
                 });
             }
-        }, 0, 200);
+        }, 0, 700);
 
 
         buttonRandomize.setOnClickListener(new View.OnClickListener() {
@@ -127,6 +150,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 drawParticles();
 
                 mapView.setBackgroundDrawable(new BitmapDrawable(bg));
+                stepCount = 0;
+                activityStatus.setText(Integer.toString(stepCount));
             }
         });
 
@@ -185,21 +210,37 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             }
         });
+
+        buttonSetHeight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                heightStr = heightView.getText().toString();
+                height = Integer.parseInt(heightStr);
+                stepLength = 0.4f*(height/100);
+                stepLengthDots = stepLength * 8;
+//                showFilename.setText(filename);
+            }
+        });
     }
 
 
 
-    public void initParticles(Particle[] p) {
+    public void initStuff() {
         cells = new Cell[20];
         map.initCells(cells);
-        for (int i=0; i<p.length; i++) {
-            p[i] = new Particle(0,0);
-            p[i].setPos(2*i, 2*i);
+        for (int i=0; i<particles.length; i++) {
+            particles[i] = new Particle(0,0);
+            particles[i].setPos(2*i, 2*i);
         }
+
+        for (int i=0; i<lastDegrees.length; i++) {
+            lastDegrees[i] = 0;
+        }
+
     }
 
     public void randomizeParticles(Particle[] p) {
-        initParticles(particles);
+        initStuff();
         int xMin, xMax, yMin, yMax;
         Random rX = new Random();
         Random rY = new Random();
@@ -278,12 +319,76 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             //Log.d("G value ",String.valueOf(g));
             //gVal.setText("g : " + String.valueOf(g));
-            double threshold = 1.60;
-            if (g > threshold && !lastPeak) {
-                stepCount++;
+            double threshold = 1.50;
+            if (!stepLimiter) {
+                if (g > threshold && !lastPeak) {
+                    onPause();
+                    stepCount++;
+                    stepLimiter = true;
 //                Log.d("Testing :",Integer.toString(stepCount));
-                activityStatus.setText(Integer.toString(stepCount));
-                lastPeak = true;
+                    activityStatus.setText(Integer.toString(stepCount));
+                    lastPeak = true;
+                    if ((mean < mapUp + 20) && (mean > mapUp - 20)) {
+                        moving[1] = 0;
+                        moving[2] = -stepLengthDots;
+                        moving[0] = 1;
+
+                        map.drawMap(bg, canvas, mapView);
+                        for (int i=0; i<particles.length; i++) {
+                            particles[i].cell = map.whichCell(cells, particles[i].getPos()[0], particles[i].getPos()[1]);
+                            particles[i].moveXY(moving[1], moving[2]);
+                        }
+                        drawParticles();
+                        mapView.setBackgroundDrawable(new BitmapDrawable(bg));
+
+
+                    }
+
+                    if ((mean < mapDown + 20) && (mean > mapDown - 20)) {
+                        moving[1] = 0;
+                        moving[2] = stepLengthDots;
+                        moving[0] = 1;
+
+                        map.drawMap(bg, canvas, mapView);
+                        for (int i=0; i<particles.length; i++) {
+                            particles[i].cell = map.whichCell(cells, particles[i].getPos()[0], particles[i].getPos()[1]);
+                            particles[i].moveXY(moving[1], moving[2]);
+                        }
+                        drawParticles();
+                        mapView.setBackgroundDrawable(new BitmapDrawable(bg));
+
+
+                    }
+
+                    if (( (mean < mapRight + 20)) && (mean > mapRight - 20)) {
+                        moving[1] = stepLengthDots;
+                        moving[2] = 0;
+                        moving[0] = 1;
+
+                        map.drawMap(bg, canvas, mapView);
+                        for (int i=0; i<particles.length; i++) {
+                            particles[i].cell = map.whichCell(cells, particles[i].getPos()[0], particles[i].getPos()[1]);
+                            particles[i].moveXY(moving[1], moving[2]);
+                        }
+                        drawParticles();
+                        mapView.setBackgroundDrawable(new BitmapDrawable(bg));
+                    }
+                    if ((mean < mapLeft + 20) && (mean > mapLeft - 20)) {
+                        moving[1] = -stepLengthDots;
+                        moving[2] = 0;
+                        moving[0] = 1;
+
+                        map.drawMap(bg, canvas, mapView);
+                        for (int i=0; i<particles.length; i++) {
+                            particles[i].cell = map.whichCell(cells, particles[i].getPos()[0], particles[i].getPos()[1]);
+                            particles[i].moveXY(moving[1], moving[2]);
+                        }
+                        drawParticles();
+                        mapView.setBackgroundDrawable(new BitmapDrawable(bg));
+                    }
+
+                    onResume();
+                }
             }
             if (g < threshold) {
                 //gVal.setText("gval :" + String.valueOf(g));
@@ -301,8 +406,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mAzimuth = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]));
 
             angleValue.setText(Integer.toString(mAzimuth));
+            for (int i=lastDegrees.length-1; i>0; i--) {
+                if (mAzimuth < -140) {
+                    mAzimuth += 360;
+                }
+                lastDegrees[i] = lastDegrees[i-1];
+            }
+            lastDegrees[0] = mAzimuth;
+            lastDegreeView.setText(Integer.toString(lastDegrees[0])+", "+Integer.toString(lastDegrees[1]));
 
-
+            int sum = 0;
+            for (int i=0; i<lastDegrees.length; i++) {
+                sum += lastDegrees[i];
+            }
+            mean = sum/lastDegrees.length;
+            degreesMean.setText(Float.toString(mean));
 //            try {
 //
 //                String test = Integer.toString(degrees) + "\n";
@@ -331,6 +449,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 degrees = (int) Math.round(Math.toDegrees(azimuth));
 
 
+
+
             }
         }
     }
@@ -338,4 +458,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sm.registerListener(this,acc,sm.SENSOR_DELAY_FASTEST);
+        sm.registerListener(this,mag,sm.SENSOR_DELAY_NORMAL);
+        sm.registerListener(this,mSensor,sm.SENSOR_DELAY_FASTEST);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sm.unregisterListener(this);
+    }
+
 }

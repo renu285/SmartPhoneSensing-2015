@@ -38,7 +38,6 @@
 
 
 
-
     <RelativeLayout
         android:id="@+id/imageBorder"
         android:layout_width="70pt"
@@ -62,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/imageBorder"
         android:layout_alignBottom="@id/activityTitle"
-        android:text="Randomize"/>
+        android:text="Init/Reset"/>
 
     <Button
         android:id="@+id/buttonMoveUp"
@@ -99,5 +98,42 @@
         android:layout_alignLeft="@id/buttonMoveUp"
         android:text="Down"/>
 
+    <TextView
+        android:id="@+id/lastDegrees"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageBorder"
+        android:layout_below="@id/buttonMoveDown"/>
+
+    <TextView
+        android:id="@+id/degreesMean"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageBorder"
+        android:layout_below="@id/lastDegrees"/>
+
+    <TextView
+        android:id="@+id/height"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/degreesMean"
+        android:layout_toRightOf="@id/imageBorder"
+        android:text="Height: "/>
+
+    <EditText
+        android:id="@+id/heightView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/height"
+        android:layout_below="@id/degreesMean"
+        android:text="180"/>
+
+    <Button
+        android:id="@+id/buttonSetHeight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/heightView"
+        android:layout_toRightOf="@id/imageBorder"
+        android:text="Set"/>
 
 </RelativeLayout>

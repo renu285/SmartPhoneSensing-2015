@@ -4,8 +4,8 @@ package com.example.dr.dasmap2;
  * Created by dr on 20-5-16.
  */
 public class Particle {
-    private int xPos = 0;
-    private int yPos = 0;
+    private float xPos = 0;
+    private float yPos = 0;
     public int cell = 0;
     public boolean[] dirBoundary = {true, true, true, true};
     public float[] boundaries = {0f, 0f, 140f, 600f};
@@ -23,8 +23,8 @@ public class Particle {
         yPos = newY;
     }
 
-    public int[] getPos() {
-        int ar[] = new int[2];
+    public float[] getPos() {
+        float ar[] = new float[2];
         ar[0] = xPos;
         ar[1] = yPos;
         return ar;
@@ -53,7 +53,7 @@ public class Particle {
         isActive = true;
     }
 
-    public void moveXY(int distX, int distY) {
+    public void moveXY(float distX, float distY) {
         xPos = xPos + distX;
         yPos = yPos + distY;
 
