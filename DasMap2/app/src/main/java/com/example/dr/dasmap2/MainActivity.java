@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     Button buttonRandomize, buttonSetHeight;
     ImageView mapView;
     EditText heightView;
-    TextView cellStats1, cellStats2, cellStats3, particleCounter;
+    TextView cellStats1, cellStats2, cellStats3, particleCounter, particleCounter2;
 
     //    Sensors
     SensorManager sm;
@@ -62,11 +62,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     
     //    Particle related
     int n = 5000;
-    Particle[] particles = new Particle[n];
-    ArrayList<Particle> particle = new ArrayList<Particle>(n);
+    ArrayList<Particle> particles = new ArrayList<Particle>(1);
     Cell[] cells;
     int particleCounterAlive = n;
     int particleCounterDead = 0;
+    int newParticles = 0;
     int[][] moveHistory = new int[10][2];
     int cellInd = 0;
     float[] pos = new float[2];
@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         cellStats2 = (TextView) findViewById(R.id.cellStats2);
         cellStats3 = (TextView) findViewById(R.id.cellStats3);
         particleCounter = (TextView) findViewById(R.id.particleCounter);
+        particleCounter2 = (TextView) findViewById(R.id.particleCounter2);
 
         buttonRandomize = (Button) findViewById(R.id.buttonRandomize);
 //        buttonMoveLeft = (Button) findViewById(R.id.buttonMoveLeft);
@@ -244,12 +245,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void initStuff() {
         cells = new Cell[20];
         map.initCells(cells);
-//        for (int i=0; i<particles.length; i++) {
-//            particles[i] = new Particle(0,0);
-//            particles[i].setPos(2*i, 2*i);
-//        }
+
         for (int i=0; i<n; i++) {
-            particle.add(new Particle(0,0));
+            particles.add(new Particle(0,0));
         }
 
         for (int i=0; i<lastDegrees.length; i++) {
@@ -273,13 +271,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         for (int i=1; i<cells.length; i++) {
             for (int j = counter; j < (counter+((cells[i].prob)/2)); j++) {
                 if (j<n) {
-                    p = particle.get(j);
+                    p = particles.get(j);
                     xMin = (int) cells[i].x1;
                     xMax = (int) cells[i].x2;
                     yMin = (int) cells[i].y1;
                     yMax = (int) cells[i].y2;
                     p.setPos(r.nextInt(xMax - xMin) + xMin, r.nextInt(yMax - yMin) + yMin);
-                    cells[i].particleCellCounter += 1;
+                    p.cell = i;
+                    cells[i].particleCellCounter ++;
                     p.setBoundaries(cells, i);
                 }
             }
@@ -290,34 +289,40 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public void drawParticles() {
         paint.setColor(Color.parseColor("#ff0000"));
+        particleCounter.setText("Alive: " + Integer.toString(particleCounterAlive) + "   Dead: " + Integer.toString(particleCounterDead));
 
-        for (int i = 0; i < particle.size(); i++) {
-            p = particle.get(i);
+        for (int i = 0; i < particles.size(); i++) {
+            p = particles.get(i);
             pos = p.getPos();
             if (p.newLocation) {
-
+                cells[p.cell].particleCellCounter --;
                 cellInd = map.whichCell(cells, pos[0], pos[1]);
+                p.cell = cellInd;
+                cells[p.cell].particleCellCounter ++;
                 p.setBoundaries(cells, cellInd);
                 p.newLocation = false;
             }
             canvas.drawPoint(pos[0], pos[1], paint);
         }
         for (int i = 0; i<particleCounterDead; i++) {
-//            particle.add(new Particle(0,0));
-            p = particle.get(r.nextInt(particleCounterAlive));
-//            pNew = particle.get(particle.size()-1);
+
+            p = particles.get(r.nextInt(particleCounterAlive));
+
             pos = p.getPos();
             pNew = new Particle(pos[0], pos[1]);
             pNew.setBoundaries(cells, p.cell);
             pNew.cell = p.cell;
+            cells[p.cell].particleCellCounter ++;
             pNew.isActive = true;
             pNew.wallHit = false;
             pNew.newLocation = false;
-            particle.add(pNew);
+            particles.add(pNew);
             canvas.drawPoint(pos[0], pos[1], paint);
         }
-        particleCounterAlive = n;
+        particleCounterAlive = particles.size();
         particleCounterDead = 0;
+
+        particleCounter2.setText("A: " + Integer.toString(particles.size()) + "  D: " + Integer.toString(particleCounterDead));
         getStats();
     }
 
@@ -360,15 +365,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     activityStatus.setText(Integer.toString(stepCount));
                     lastPeak = true;
 
-                    for (int i=0; i<particle.size(); i++) {
-                        p = particle.get(i);
+                    for (int i=0; i<particles.size(); i++) {
+                        p = particles.get(i);
                         directionalNoise = noise.getValue(r.nextInt(noise.sum));
                         stepLengthNoise = r.nextFloat()*0.8f;
-                        p.moveXY((float)Math.cos(Math.toRadians(meanDirection+directionalNoise))*(stepLengthDots+stepLengthNoise), (float)Math.sin(Math.toRadians(meanDirection+directionalNoise))*(stepLengthDots+stepLengthNoise), cells, map);
+                        p.moveXY(-(float)Math.cos(Math.toRadians(meanDirection+directionalNoise))*(stepLengthDots+stepLengthNoise), -(float)Math.sin(Math.toRadians(meanDirection+directionalNoise))*(stepLengthDots+stepLengthNoise), cells, map);
+//                        p.move(-(float)Math.cos(Math.toRadians(meanDirection+directionalNoise))*(stepLengthDots+stepLengthNoise), -(float)Math.sin(Math.toRadians(meanDirection+directionalNoise))*(stepLengthDots+stepLengthNoise));
+
                         if (!p.isActive) {
-                            particle.remove(i);
+                            particles.remove(i);
                             particleCounterAlive --;
                             particleCounterDead ++;
+                            cells[p.cell].particleCellCounter --;
                         }
                     }
 
@@ -391,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             SensorManager.getRotationMatrixFromVector(rMat, event.values);
             // get the azimuth value (orientation[0]) in degree
             // mAzimuth = (int) ( Math.todegrees( SensorManager.getOrientation( rMat, orientation )[0] ) + 360 ) % 360;
-            mAzimuth = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]));
+            mAzimuth = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]))-35;
 
             angleValue.setText(Integer.toString(mAzimuth));
             for (int i=lastDegrees.length-1; i>0; i--) {
@@ -473,36 +481,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                topCellsIndex[0] = i;
            }
         }
-//        float[][] cellOrder = new float[20][4];
-//        float[][] temp = new float[20][4];
-//        int sum = 0;
-//
-//        for (int i=1; i<cells.length; i++) {
-//            cellOrder[i][0] = i;
-//            cellOrder[i][1] = cells[i].particleCellCounter;
-//            cellOrder[i][2] = (float)cells[i].particleCellCounter/n;
-//            cellOrder[i][3] = (float)cells[i].prob;
-//            temp[i] = cellOrder[i];
-//            sum += cellOrder[i][1];
-//        }
-//        for (int j=0; j<cells.length; j++) {
-//            for (int i=0; i<cells.length-1; i++) {
-//                if (cellOrder[i][1] < cellOrder[i + 1][1]) {
-//                    temp[i] = cellOrder[i];
-//                    cellOrder[i] = cellOrder[i + 1];
-//                    cellOrder[i + 1] = temp[i];
-//                }
-//            }
-//        }
-//        cellStats1.setText("C"+cellOrder[0][0]+" "+cellOrder[0][1]+" "+cellOrder[0][2]+" "+cells[(int)cellOrder[0][0]].prob);
-//        cellStats2.setText("C"+cellOrder[1][0]+" "+cellOrder[1][1]+" "+cellOrder[1][2]+" "+cells[(int)cellOrder[1][0]].prob);
-//        cellStats3.setText("C"+cellOrder[2][0]+" "+cellOrder[2][1]+" "+cellOrder[2][2]+" "+cells[(int)cellOrder[2][0]].prob);
-        cellStats1.setText("C"+cells[topCellsIndex[0]]+" "+cells[topCellsIndex[0]].particleCellCounter+" "+cells[topCellsIndex[0]].prob);
-        cellStats1.setText("C"+cells[topCellsIndex[1]]+" "+cells[topCellsIndex[1]].particleCellCounter+" "+cells[topCellsIndex[1]].prob);
-        cellStats1.setText("C"+cells[topCellsIndex[2]]+" "+cells[topCellsIndex[2]].particleCellCounter+" "+cells[topCellsIndex[2]].prob);
+
+        cellStats1.setText("C"+topCellsIndex[0]+" "+Integer.toString(cells[topCellsIndex[0]].particleCellCounter)+" "+Integer.toString(cells[topCellsIndex[0]].prob));
+        cellStats2.setText("C"+topCellsIndex[1]+" "+Integer.toString(cells[topCellsIndex[1]].particleCellCounter)+" "+Integer.toString(cells[topCellsIndex[1]].prob));
+        cellStats3.setText("C"+topCellsIndex[2]+" "+Integer.toString(cells[topCellsIndex[2]].particleCellCounter)+" "+Integer.toString(cells[topCellsIndex[2]].prob));
 
 
-//        particleCounter.setText(Integer.toString(sum));
     }
 
 }

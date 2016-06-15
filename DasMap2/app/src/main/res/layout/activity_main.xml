@@ -63,41 +63,6 @@
         android:layout_alignBottom="@id/activityTitle"
         android:text="Init/Reset"/>
 
-    <!--<Button-->
-        <!--android:id="@+id/buttonMoveUp"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_below="@id/buttonRandomize"-->
-        <!--android:layout_toRightOf="@id/imageBorder"-->
-        <!--android:layout_marginLeft="40dp"-->
-        <!--android:text="Up"/>-->
-
-
-    <!--<Button-->
-        <!--android:id="@+id/buttonMoveLeft"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_toRightOf="@id/imageBorder"-->
-        <!--android:layout_below="@id/buttonMoveUp"-->
-        <!--android:text="Left"/>-->
-
-
-    <!--<Button-->
-        <!--android:id="@+id/buttonMoveRight"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_toRightOf="@id/buttonMoveLeft"-->
-        <!--android:layout_alignBottom="@id/buttonMoveLeft"-->
-        <!--android:text="Right"/>-->
-
-    <!--<Button-->
-        <!--android:id="@+id/buttonMoveDown"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_below="@id/buttonMoveLeft"-->
-        <!--android:layout_alignLeft="@id/buttonMoveUp"-->
-        <!--android:text="Down"/>-->
-
     <TextView
         android:id="@+id/lastDegrees"
         android:layout_width="wrap_content"
@@ -167,5 +132,14 @@
         android:layout_toRightOf="@id/imageBorder"
         android:layout_below="@id/cellStats3"
         android:text=""/>
+
+    <TextView
+        android:id="@+id/particleCounter2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageBorder"
+        android:layout_below="@id/particleCounter"
+        android:text=""/>
+
 
 </RelativeLayout>

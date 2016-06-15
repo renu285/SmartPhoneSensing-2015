@@ -57,6 +57,11 @@ public class Particle {
         isActive = true;
     }
 
+    public void move(float distX, float distY) {
+        xPos = xPos + distX;
+        yPos = yPos + distY;
+    }
+
     public boolean moveXY(float distX, float distY, Cell[] cells, Map map) {
         xPos = xPos + distX;
         yPos = yPos + distY;
@@ -67,13 +72,13 @@ public class Particle {
             if (dirBoundary[2] == true) {
                 isActive = false;
                 wallHit = true;
-                cells[cell].particleCellCounter -=1;
+//                cells[cell].particleCellCounter --;
             }
             else {
                 newLocation = true;
-                cells[cell].particleCellCounter -=1;
-                newInd = map.whichCell(cells, xPos, yPos);
-                cells[newInd].particleCellCounter +=1;
+//                cells[cell].particleCellCounter --;
+//                newInd = map.whichCell(cells, xPos, yPos);
+//                cells[newInd].particleCellCounter ++;
             }
         }
 
@@ -81,13 +86,13 @@ public class Particle {
             if (dirBoundary[0] == true) {
                 isActive = false;
                 wallHit = true;
-                cells[cell].particleCellCounter -=1;
+//                cells[cell].particleCellCounter --;
             }
             else {
                 newLocation = true;
-                cells[cell].particleCellCounter -=1;
-                newInd = map.whichCell(cells, xPos, yPos);
-                cells[newInd].particleCellCounter +=1;
+//                cells[cell].particleCellCounter --;
+//                newInd = map.whichCell(cells, xPos, yPos);
+//                cells[newInd].particleCellCounter ++;
             }
         }
 
@@ -95,13 +100,13 @@ public class Particle {
             if (dirBoundary[3] == true) {
                 isActive = false;
                 wallHit = true;
-                cells[cell].particleCellCounter -=1;
+//                cells[cell].particleCellCounter --;
             }
             else {
                 newLocation = true;
-                cells[cell].particleCellCounter -=1;
-                newInd = map.whichCell(cells, xPos, yPos);
-                cells[newInd].particleCellCounter +=1;
+//                cells[cell].particleCellCounter --;
+//                newInd = map.whichCell(cells, xPos, yPos);
+//                cells[newInd].particleCellCounter ++;
             }
         }
 
@@ -109,13 +114,13 @@ public class Particle {
             if (dirBoundary[1] == true) {
                 isActive = false;
                 wallHit = true;
-                cells[cell].particleCellCounter -=1;
+//                cells[cell].particleCellCounter --;
             }
             else {
                 newLocation = true;
-                cells[cell].particleCellCounter -=1;
-                newInd = map.whichCell(cells, xPos, yPos);
-                cells[newInd].particleCellCounter +=1;
+//                cells[cell].particleCellCounter --;
+//                newInd = map.whichCell(cells, xPos, yPos);
+//                cells[newInd].particleCellCounter ++;
             }
         }
 
