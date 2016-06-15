@@ -7,6 +7,9 @@ public class Cell {
     public float x1, x2, y1, y2;
     public boolean[] dirBoundaries = {false, false, false, false};
     public int prob = 0;
+    public boolean wallHit = false;
+    public int particleCellCounter = 0;
+    public int hitCounter = 0;
 
 
     public void setCell(float x, float y, float xx, float yy) {

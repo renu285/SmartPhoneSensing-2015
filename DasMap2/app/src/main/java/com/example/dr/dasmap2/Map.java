@@ -27,6 +27,7 @@ public class Map {
 
         return cellInd;
     }
+
     public Cell[] initCells(Cell[] cells) {
         for (int i=0; i<cells.length; i++) {
             cells[i] = new Cell();
@@ -48,10 +49,11 @@ public class Map {
         cells[13].setCell(11.2f, 364.8f, 60.8f, 396.8f);
         cells[14].setCell(60f, 396.8f, 76.8f, 428.8f);
         cells[15].setCell(60f, 428.8f, 76.8f, 460.8f);
-        cells[16].setCell(60f, 460.8f, 76.8f, 492.8f);
-        cells[17].setCell(11.2f, 460.8f, 76.8f, 492.8f);
+        cells[16].setCell(60.8f, 460.8f, 76.8f, 492.8f);
+        cells[17].setCell(11.2f, 460.8f, 60.8f, 492.8f);
         cells[18].setCell(101.6f, 460.8f, 125.6f, 492.8f);
         cells[19].setCell(76.8f, 460.8f, 101.6f, 468.8f);
+//        cells[19].setCell(76.8f, 460.8f, 101.6f, 492.8f);
 
 //                                 left, up, right, down
         cells[0].setDirBoundaries(true, true, true, true);
@@ -70,31 +72,31 @@ public class Map {
         cells[13].setDirBoundaries(true, true, false, true);
         cells[14].setDirBoundaries(true, false, true, false);
         cells[15].setDirBoundaries(true, false, true, false);
-        cells[16].setDirBoundaries(true, false, false, true);
+        cells[16].setDirBoundaries(false, false, false, true);
         cells[17].setDirBoundaries(true, true, false, true);
         cells[18].setDirBoundaries(false, true, true, true);
         cells[19].setDirBoundaries(false, true, false, true);
 
         cells[0].prob = 0;
-        cells[1].prob = 0;
+        cells[1].prob = 987;
         cells[2].prob = 340;
         cells[3].prob = 340;
-        cells[4].prob = 0;
+        cells[4].prob = 987;
         cells[5].prob = 340;
         cells[6].prob = 340;
         cells[7].prob = 340;
-        cells[8].prob = 987+987+987+987+987;
+        cells[8].prob = 987;
         cells[9].prob = 340;
         cells[10].prob = 340;
         cells[11].prob = 340;
         cells[12].prob = 340;
-        cells[13].prob = 0;
+        cells[13].prob = 987;
         cells[14].prob = 340;
         cells[15].prob = 340;
         cells[16].prob = 340;
-        cells[17].prob = 0;
+        cells[17].prob = 987;
         cells[18].prob = 663;
-        cells[19].prob = 324;
+        cells[19].prob = 150;
 
         return cells;
     }

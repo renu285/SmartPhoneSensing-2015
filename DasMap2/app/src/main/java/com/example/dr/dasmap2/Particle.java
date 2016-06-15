@@ -9,11 +9,14 @@ public class Particle {
     public int cell = 0;
     public boolean[] dirBoundary = {true, true, true, true};
     public float[] boundaries = {0f, 0f, 140f, 600f};
+    public boolean newLocation = false;
+
+    public boolean wallHit = false;
 
     public boolean isActive = true;
 
 
-    Particle(int x, int y) {
+    Particle(float x, float y) {
         this.xPos = x;
         this.yPos = y;
     }
@@ -50,25 +53,73 @@ public class Particle {
         boundaries[1] = cells[newInd].y1;
         boundaries[2] = cells[newInd].x2;
         boundaries[3] = cells[newInd].y2;
+        cells[newInd].particleCellCounter += 1;
         isActive = true;
     }
 
-    public void moveXY(float distX, float distY) {
+    public boolean moveXY(float distX, float distY, Cell[] cells, Map map) {
         xPos = xPos + distX;
         yPos = yPos + distY;
+        wallHit = false;
+        int newInd;
 
-        if (xPos > boundaries[2] && dirBoundary[2] == true) {
-            isActive = false;
+        if (xPos > boundaries[2]) {
+            if (dirBoundary[2] == true) {
+                isActive = false;
+                wallHit = true;
+                cells[cell].particleCellCounter -=1;
+            }
+            else {
+                newLocation = true;
+                cells[cell].particleCellCounter -=1;
+                newInd = map.whichCell(cells, xPos, yPos);
+                cells[newInd].particleCellCounter +=1;
+            }
         }
-        if (xPos < boundaries[0] && dirBoundary[0] == true) {
-            isActive = false;
+
+        if (xPos < boundaries[0]) {
+            if (dirBoundary[0] == true) {
+                isActive = false;
+                wallHit = true;
+                cells[cell].particleCellCounter -=1;
+            }
+            else {
+                newLocation = true;
+                cells[cell].particleCellCounter -=1;
+                newInd = map.whichCell(cells, xPos, yPos);
+                cells[newInd].particleCellCounter +=1;
+            }
         }
-        if (yPos > boundaries[3] && dirBoundary[3] == true) {
-            isActive = false;
+
+        if (yPos > boundaries[3]) {
+            if (dirBoundary[3] == true) {
+                isActive = false;
+                wallHit = true;
+                cells[cell].particleCellCounter -=1;
+            }
+            else {
+                newLocation = true;
+                cells[cell].particleCellCounter -=1;
+                newInd = map.whichCell(cells, xPos, yPos);
+                cells[newInd].particleCellCounter +=1;
+            }
         }
-        if (yPos < boundaries[1] && dirBoundary[1] == true) {
-            isActive = false;
+
+        if (yPos < boundaries[1]) {
+            if (dirBoundary[1] == true) {
+                isActive = false;
+                wallHit = true;
+                cells[cell].particleCellCounter -=1;
+            }
+            else {
+                newLocation = true;
+                cells[cell].particleCellCounter -=1;
+                newInd = map.whichCell(cells, xPos, yPos);
+                cells[newInd].particleCellCounter +=1;
+            }
         }
+
+        return wallHit;
     }
 
     public void activate() {
