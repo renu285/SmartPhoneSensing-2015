@@ -180,6 +180,26 @@ public class Map {
         canvas.drawLine(76.8f,460f,76.8f,468f, paint);
         canvas.drawLine(60f,460.8f,61f,492.8f, paint);
 
+        paint.setColor(Color.parseColor("#999999"));
+        canvas.drawText("C1", 106, 106, paint);
+        canvas.drawText("C2", 43, 128, paint);
+        canvas.drawText("C3", 78, 162, paint);
+        canvas.drawText("C4", 2, 186, paint);
+        canvas.drawText("C5", 43, 194, paint);
+        canvas.drawText("C6", 43, 224, paint);
+        canvas.drawText("C7", 43, 258, paint);
+        canvas.drawText("C8", 106, 234, paint);
+        canvas.drawText("C9", 43, 291, paint);
+        canvas.drawText("C10", 37, 323, paint);
+        canvas.drawText("C11", 37, 354, paint);
+        canvas.drawText("C12", 78, 383, paint);
+        canvas.drawText("C13", 2, 410, paint);
+        canvas.drawText("C14", 37, 416, paint);
+        canvas.drawText("C15", 37, 448, paint);
+        canvas.drawText("C16", 78, 490, paint);
+        canvas.drawText("C17", 2, 504, paint);
+        canvas.drawText("C18", 106, 459, paint);
+
         mapView.setBackgroundDrawable(new BitmapDrawable(bg));
     }
 }

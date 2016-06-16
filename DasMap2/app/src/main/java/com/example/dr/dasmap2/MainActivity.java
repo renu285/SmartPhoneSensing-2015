@@ -269,6 +269,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         int counter = 0;
         for (int i=1; i<cells.length; i++) {
+            cells[i].particleCellCounter = 0;
             for (int j = counter; j < (counter+((cells[i].prob)/2)); j++) {
                 if (j<n) {
                     p = particles.get(j);
@@ -284,6 +285,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
             counter += cells[i].prob/2;
         }
+        getStats();
 
     }
 
@@ -373,10 +375,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //                        p.move(-(float)Math.cos(Math.toRadians(meanDirection+directionalNoise))*(stepLengthDots+stepLengthNoise), -(float)Math.sin(Math.toRadians(meanDirection+directionalNoise))*(stepLengthDots+stepLengthNoise));
 
                         if (!p.isActive) {
+                            cells[p.cell].particleCellCounter --;
                             particles.remove(i);
                             particleCounterAlive --;
                             particleCounterDead ++;
-                            cells[p.cell].particleCellCounter --;
+
                         }
                     }
 
@@ -399,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             SensorManager.getRotationMatrixFromVector(rMat, event.values);
             // get the azimuth value (orientation[0]) in degree
             // mAzimuth = (int) ( Math.todegrees( SensorManager.getOrientation( rMat, orientation )[0] ) + 360 ) % 360;
-            mAzimuth = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]))-35;
+            mAzimuth = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]))-65;
 
             angleValue.setText(Integer.toString(mAzimuth));
             for (int i=lastDegrees.length-1; i>0; i--) {
