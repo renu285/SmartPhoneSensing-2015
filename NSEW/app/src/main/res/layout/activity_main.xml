@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.dr.dasmap2.MainActivity">
+
+    <TextView
+        android:id="@+id/angleTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Angle: "/>
+
+    <TextView
+        android:id="@+id/angleValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/angleTitle"
+        android:layout_alignBottom="@id/angleTitle" />
+
+    <TextView
+        android:id="@+id/activityTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/angleTitle"
+        android:text="Steps: "/>
+
+    <TextView
+        android:id="@+id/activityStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/activityTitle"
+        android:layout_alignBottom="@id/activityTitle" />
+
+
+
+    <RelativeLayout
+        android:id="@+id/imageBorder"
+        android:layout_width="70pt"
+        android:layout_height="302pt"
+        android:background="@drawable/border"
+        android:layout_below="@id/activityTitle">
+
+        <ImageView
+            android:id="@+id/image"
+            android:paddingLeft="20pt"
+            android:layout_width="70pt"
+            android:layout_height="300pt"
+            android:background="@drawable/border"
+            />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/buttonRandomize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/imageBorder"
+        android:layout_alignBottom="@id/activityTitle"
+        android:text="Init/Reset"/>
+
+    <TextView
+        android:id="@+id/lastDegrees"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageBorder"
+        android:layout_below="@id/buttonRandomize"/>
+
+    <TextView
+        android:id="@+id/degreesMean"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageBorder"
+        android:layout_below="@id/lastDegrees"/>
+
+    <TextView
+        android:id="@+id/height"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/degreesMean"
+        android:layout_toRightOf="@id/imageBorder"
+        android:text="Height: "/>
+
+    <EditText
+        android:id="@+id/heightView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/height"
+        android:layout_below="@id/degreesMean"
+        android:text="180"/>
+
+    <Button
+        android:id="@+id/buttonSetHeight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/heightView"
+        android:layout_toRightOf="@id/imageBorder"
+        android:text="Set"/>
+
+    <TextView
+        android:id="@+id/cellStats1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageBorder"
+        android:layout_below="@id/buttonSetHeight"
+        android:text="1: "/>
+
+    <TextView
+        android:id="@+id/cellStats2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageBorder"
+        android:layout_below="@id/cellStats1"
+        android:text="2: "/>
+
+    <TextView
+        android:id="@+id/cellStats3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageBorder"
+        android:layout_below="@id/cellStats2"
+        android:text="3: "/>
+
+    <TextView
+        android:id="@+id/particleCounter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageBorder"
+        android:layout_below="@id/cellStats3"
+        android:text=""/>
+
+    <TextView
+        android:id="@+id/particleCounter2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageBorder"
+        android:layout_below="@id/particleCounter"
+        android:text=""/>
+
+
+</RelativeLayout>
