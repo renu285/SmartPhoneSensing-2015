@@ -141,5 +141,40 @@
         android:layout_below="@id/particleCounter"
         android:text=""/>
 
+    <TextView
+        android:id="@+id/ageCounter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageBorder"
+        android:layout_below="@id/particleCounter2"
+        android:text=""/>
+
+    <TextView
+        android:id="@+id/location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imageBorder"
+        android:layout_below="@id/ageCounter"
+        android:text=""
+        android:textSize="20pt"
+        android:textColor="#1DC400"/>
+
+
+    <EditText
+        android:id="@+id/degreeOffset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/height"
+        android:layout_below="@id/location"
+        android:text="0"/>
+
+    <Button
+        android:id="@+id/buttonSetDegreeOffset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/degreeOffset"
+        android:layout_toRightOf="@id/imageBorder"
+        android:text="Set"/>
+
 
 </RelativeLayout>

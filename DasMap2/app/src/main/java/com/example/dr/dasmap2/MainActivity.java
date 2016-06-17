@@ -74,6 +74,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     int newCell;
     Particle p;
     Particle pNew;
+    int freshLocation = 0;
+    float freshLocationRatio = 0.1f;
+
 
     //    Drawing objects
     Bitmap bg;
@@ -265,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public void randomizeParticles() {
 
-        int xMin, xMax, yMin, yMax;
+
 
         int counter = 0;
         for (int i=1; i<cells.length; i++) {
@@ -306,7 +309,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
             canvas.drawPoint(pos[0], pos[1], paint);
         }
-        for (int i = 0; i<particleCounterDead; i++) {
+        freshLocation = (int)(freshLocationRatio * (float)particleCounterDead);
+        for (int i = 0; i<(particleCounterDead-freshLocation); i++) {
 
             p = particles.get(r.nextInt(particleCounterAlive));
 
@@ -321,6 +325,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             particles.add(pNew);
             canvas.drawPoint(pos[0], pos[1], paint);
         }
+
+        for (int i=0; i<freshLocation; i++) {
+            newCell = r.nextInt(10000);
+            pNew = new Particle(0,0);
+            pNew.cell = map.isCell(cells, newCell);
+            pNew.setBoundaries(cells, pNew.cell);
+            xMin = (int) cells[pNew.cell].x1;
+            xMax = (int) cells[pNew.cell].x2;
+            yMin = (int) cells[pNew.cell].y1;
+            yMax = (int) cells[pNew.cell].y2;
+            pos[0] = r.nextInt(xMax - xMin) + xMin;
+            pos[1] = r.nextInt(yMax - yMin) + yMin;
+            pNew.setPos((int)pos[0], (int)pos[1]);
+            cells[pNew.cell].particleCellCounter ++;
+            particles.add(pNew);
+            canvas.drawPoint(pos[0], pos[1], paint);
+        }
+
         particleCounterAlive = particles.size();
         particleCounterDead = 0;
 
@@ -402,7 +424,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             SensorManager.getRotationMatrixFromVector(rMat, event.values);
             // get the azimuth value (orientation[0]) in degree
             // mAzimuth = (int) ( Math.todegrees( SensorManager.getOrientation( rMat, orientation )[0] ) + 360 ) % 360;
-            mAzimuth = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]))-65;
+            mAzimuth = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]))-60;
 
             angleValue.setText(Integer.toString(mAzimuth));
             for (int i=lastDegrees.length-1; i>0; i--) {

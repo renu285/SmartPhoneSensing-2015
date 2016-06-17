@@ -4,12 +4,14 @@ package com.example.dr.dasmap2;
  * Created by dr on 20-5-16.
  */
 public class Particle {
-    private float xPos = 0;
-    private float yPos = 0;
+    public float xPos = 0;
+    public float yPos = 0;
     public int cell = 0;
     public boolean[] dirBoundary = {true, true, true, true};
     public float[] boundaries = {0f, 0f, 140f, 600f};
     public boolean newLocation = false;
+    public int age = -1;
+    public int closeParticles = 0;
 
     public boolean wallHit = false;
 

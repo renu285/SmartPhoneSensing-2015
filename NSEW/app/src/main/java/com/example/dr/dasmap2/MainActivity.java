@@ -28,10 +28,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     //    Views & buttons
     TextView angleTitle, angleValue, activityTitle, activityStatus, lastDegreeView, degreesMean;
-    Button buttonRandomize, buttonSetHeight;
+    Button buttonRandomize, buttonSetHeight, buttonSetDegreeOffset;
     ImageView mapView;
-    EditText heightView;
-    TextView cellStats1, cellStats2, cellStats3, particleCounter, particleCounter2;
+    EditText heightView, degreeOffset;
+    TextView cellStats1, cellStats2, cellStats3, particleCounter, particleCounter2, ageCounter, location;
 
     //    Sensors
     SensorManager sm;
@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     NoiseDirection noise = new NoiseDirection();
     int directionalNoise = 0;
     int right = 0, left = 180, down = 90, up = -90;
+    int directionOffset = 0;
 
     //    Activity
     int stepCount;
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     float height = 180;
     String heightStr = "180";
-    float stepLength = 0.4f*(height/100);
+    float stepLength = 0.35f*(height/100);
     float stepLengthDots = stepLength * 8;
     float stepLengthNoise = 0.0f;
     
@@ -75,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     Particle pNew;
     int freshLocation = 0;
     float freshLocationRatio = 0.1f;
+    int maxAge = 0;
+    int maxAgeCounter = 0;
+    int[] maxAgeIndex = {-1, -1, -1, -1, -1};
 
 
     //    Drawing objects
@@ -86,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //    Utilities
     Random r;
     Timer timer;
+    int timerCountDown = 60;
 
 
     
@@ -108,9 +113,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         cellStats3 = (TextView) findViewById(R.id.cellStats3);
         particleCounter = (TextView) findViewById(R.id.particleCounter);
         particleCounter2 = (TextView) findViewById(R.id.particleCounter2);
+        ageCounter = (TextView) findViewById(R.id.ageCounter);
+        location = (TextView) findViewById(R.id.location);
+        degreeOffset = (EditText) findViewById(R.id.degreeOffset);
 
         buttonRandomize = (Button) findViewById(R.id.buttonRandomize);
         buttonSetHeight = (Button) findViewById(R.id.buttonSetHeight);
+        buttonSetDegreeOffset = (Button) findViewById(R.id.buttonSetDegreeOffset);
 
         sm = (SensorManager)getSystemService(SENSOR_SERVICE);
         acc = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -127,9 +136,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         paint = new Paint();
         map.drawMap(bg, canvas, mapView);
 
+        r = new Random();
         initStuff();
 
-        r = new Random();
+
 
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -139,13 +149,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     @Override
                     public void run() {
                         if (stepLimiter) {
-                            stepLimiter = false;
+                            timerCountDown -= 1;
+                            if (timerCountDown <= 0) {
+                                stepLimiter = false;
+                            }
                         }
 
                     }
                 });
             }
-        }, 0, 700);
+        }, 0, 10);
 
 
         buttonRandomize.setOnClickListener(new View.OnClickListener() {
@@ -174,6 +187,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //                showFilename.setText(filename);
             }
         });
+
+        buttonSetDegreeOffset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                directionOffset = Integer.parseInt(degreeOffset.getText().toString());
+                up += directionOffset;
+                down += directionOffset;
+                if (down > 180) {
+                    down -= 360;
+                }
+                left += (directionOffset-360);
+                right += directionOffset;
+            }
+        });
     }
 
 
@@ -197,11 +224,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         noise.init();
 
+        randomizeParticles();
+        map.drawMap(bg, canvas, mapView);
+        drawParticles();
+
+        mapView.setBackgroundDrawable(new BitmapDrawable(bg));
+        stepCount = 0;
+        activityStatus.setText(Integer.toString(stepCount));
+
     }
 
     public void randomizeParticles() {
-
-
 
         int counter = 0;
         for (int i=1; i<cells.length; i++) {
@@ -228,6 +261,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void drawParticles() {
         paint.setColor(Color.parseColor("#ff0000"));
         particleCounter.setText("Alive: " + Integer.toString(particleCounterAlive) + "   Dead: " + Integer.toString(particleCounterDead));
+        maxAge = 0;
+        maxAgeCounter = 0;
+        for (int i=0; i<maxAgeIndex.length; i++) {
+            maxAgeIndex[i] = 0;
+        }
 
         for (int i = 0; i < particles.size(); i++) {
             p = particles.get(i);
@@ -240,8 +278,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 p.setBoundaries(cells, cellInd);
                 p.newLocation = false;
             }
-            canvas.drawPoint(pos[0], pos[1], paint);
+            p.age ++;
+            if (p.age > maxAge) {
+                maxAgeCounter = 1;
+                maxAge = p.age;
+                maxAgeIndex[4] = maxAgeIndex[3];
+                maxAgeIndex[3] = maxAgeIndex[2];
+                maxAgeIndex[2] = maxAgeIndex[1];
+                maxAgeIndex[1] = maxAgeIndex[0];
+                maxAgeIndex[0] = i;
+                canvas.drawPoint(pos[0], pos[1], paint);
+            }
+            else if (p.age == maxAge) {
+                maxAgeCounter ++;
+                maxAgeIndex[4] = maxAgeIndex[3];
+                maxAgeIndex[3] = maxAgeIndex[2];
+                maxAgeIndex[2] = maxAgeIndex[1];
+                maxAgeIndex[1] = maxAgeIndex[0];
+                maxAgeIndex[0] = i;
+                canvas.drawPoint(pos[0], pos[1], paint);
+            }
+            else {
+                canvas.drawPoint(pos[0], pos[1], paint);
+            }
         }
+
         freshLocation = (int)(freshLocationRatio * (float)particleCounterDead);
         for (int i = 0; i<(particleCounterDead-freshLocation); i++) {
 
@@ -260,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
         for (int i=0; i<freshLocation; i++) {
-            newCell = r.nextInt(10000);
+            newCell = r.nextInt(10000)+1;
             pNew = new Particle(0,0);
             pNew.cell = map.isCell(cells, newCell);
             pNew.setBoundaries(cells, pNew.cell);
@@ -276,10 +337,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             canvas.drawPoint(pos[0], pos[1], paint);
         }
 
+        if (stepCount>0) {
+            paint.setColor(Color.parseColor("#1DC400"));
+            for (int i=0; i<maxAgeIndex.length; i++) {
+                if (maxAgeIndex[i]>0) {
+                    p = particles.get(maxAgeIndex[i]);
+                    canvas.drawCircle(p.xPos, p.yPos, 3, paint);
+                }
+            }
+
+        }
+
         particleCounterAlive = particles.size();
         particleCounterDead = 0;
 
         particleCounter2.setText("A: " + Integer.toString(particles.size()) + "  D: " + Integer.toString(particleCounterDead));
+        ageCounter.setText("Max age: " + Integer.toString(maxAge) + "   Count: " + Integer.toString(maxAgeCounter));
         getStats();
     }
 
@@ -318,6 +391,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     float[] pos = new float[2];
                     stepCount++;
                     stepLimiter = true;
+                    timerCountDown = 60;
 
                     activityStatus.setText(Integer.toString(stepCount));
                     lastPeak = true;
@@ -325,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     for (int i=0; i<particles.size(); i++) {
                         p = particles.get(i);
                         directionalNoise = noise.getValue(r.nextInt(noise.sum));
-                        stepLengthNoise = r.nextFloat()*0.8f;
+                        stepLengthNoise = (r.nextFloat()*0.8f)-0.4f;
 //                        p.moveXY(-(float)Math.cos(Math.toRadians(meanDirection+directionalNoise))*(stepLengthDots+stepLengthNoise), -(float)Math.sin(Math.toRadians(meanDirection+directionalNoise))*(stepLengthDots+stepLengthNoise), cells, map);
 
                         if( (meanDirection< (up+45)) && (meanDirection> (up-45)) ) {
@@ -459,18 +533,41 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 sorted = true;
             }
             if( (cells[i].particleCellCounter > maxCellCount[2]) && !sorted) {
-
                 maxCellCount[2] = cells[i].particleCellCounter;
-
                 topCellsIndex[2] = i;
-
             }
 
+//            if(stepCount > 5) {
+//                p = particles.get(maxAgeIndex[0]);
+//                if (p.cell == topCellsIndex[0]) {
+//                    location.setText("Cell " + Integer.toString(p.cell));
+//                }
+//                else {
+//                    location.setText("Not sure");
+//                }
+//            }
+
+
+        }
+        int maxAgePerCell = 0;
+        if (stepCount > 12) {
+            for (int i=0; i<maxAgeIndex.length; i++) {
+                if (maxAgeIndex[i]>0) {
+                    p = particles.get(maxAgeIndex[i]);
+                    if (p.cell == topCellsIndex[0]) {
+                        maxAgePerCell ++;
+                    }
+                }
+            }
+            if (maxAgePerCell>2) {
+                location.setText("Cell " + Integer.toString(p.cell));
+            }
+            else location.setText("Not sure");
         }
 
-        cellStats1.setText("C"+topCellsIndex[0]+" "+Integer.toString(cells[topCellsIndex[0]].particleCellCounter)+" "+Integer.toString(cells[topCellsIndex[0]].prob));
-        cellStats2.setText("C"+topCellsIndex[1]+" "+Integer.toString(cells[topCellsIndex[1]].particleCellCounter)+" "+Integer.toString(cells[topCellsIndex[1]].prob));
-        cellStats3.setText("C"+topCellsIndex[2]+" "+Integer.toString(cells[topCellsIndex[2]].particleCellCounter)+" "+Integer.toString(cells[topCellsIndex[2]].prob));
+        cellStats1.setText("C"+topCellsIndex[0]+": P "+Integer.toString(cells[topCellsIndex[0]].particleCellCounter)+"   "+Integer.toString(cells[topCellsIndex[0]].prob));
+        cellStats2.setText("C"+topCellsIndex[1]+": P "+Integer.toString(cells[topCellsIndex[1]].particleCellCounter)+"   "+Integer.toString(cells[topCellsIndex[1]].prob));
+        cellStats3.setText("C"+topCellsIndex[2]+": P "+Integer.toString(cells[topCellsIndex[2]].particleCellCounter)+"   "+Integer.toString(cells[topCellsIndex[2]].prob));
 
 
     }
