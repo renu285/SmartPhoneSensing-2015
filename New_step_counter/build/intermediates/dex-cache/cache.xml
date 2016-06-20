@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="5d8aa87adfb61996f6543f5783ab722b5b4dc0c3">
+        <dex dex="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_479cb497e1b92822506fa04dbf6fa0447d64eb46/classes.dex" />
+    </item>
+    <item
+        jar="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="a0b4eff9cbccf46293205278b882cac45bba4375">
+        <dex dex="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_d118a3c6c45a9d514212cb4a186977f2e47b7e17/classes.dex" />
+    </item>
+    <item
+        jar="/home/dr/Android/Sdk/extras/android/m2repository/com/android/support/support-annotations/23.4.0/support-annotations-23.4.0.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="ffbe55fdb2bb456b1485831706a9eac3300bb6b8">
+        <dex dex="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/intermediates/transforms/dex/debug/folders/1000/10/support-annotations-23.4.0_2d79a54db6ccc8e10d78ccdda48f45f4db591c3d/classes.dex" />
+    </item>
+    <item
+        jar="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.4.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="548f06de403a9409f00554b3ee12a9fdea0e236c">
+        <dex dex="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-appcompat-v7-23.4.0_dc149430249308217badd6e360c2270813223f05/classes.dex" />
+    </item>
+    <item
+        jar="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.4.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="de4db3785756bfb0915a9f59a9b3f2fea7407be4">
+        <dex dex="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-animated-vector-drawable-23.4.0_f4d55d08143f2c9d69cd0dc5546e90bab43a6f28/classes.dex" />
+    </item>
+    <item
+        jar="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.4.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="c2c594cace5d83a3227b2b6e658ecbfd586d3ed9">
+        <dex dex="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-vector-drawable-23.4.0_72c391691c198281a7202650915fcba6364150a0/classes.dex" />
+    </item>
+    <item
+        jar="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.4.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="67bd36ee9340ec7c254108936ad16b24bed160cc">
+        <dex dex="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-v4-23.4.0_854c03c3ec45260a616298063cc7098c89be89eb/classes.dex" />
+    </item>
+    <item
+        jar="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.4.0/jars/libs/internal_impl-23.4.0.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="ea3c07504d2c8f4b13aa17c45c1b68ed9c1c3674">
+        <dex dex="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-23.4.0_0d13f6257f6602154f3f57350ef4efa1751ed434/classes.dex" />
+    </item>
+
+</items>

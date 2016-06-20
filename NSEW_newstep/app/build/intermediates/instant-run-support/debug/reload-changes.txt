@@ -1,0 +1,2 @@
+CHANGED,/home/dr/dev/git/in4254/SmartPhoneSensing-2015/NSEW_newstep/app/build/intermediates/transforms/instantRun/debug/folders/4000/5/enhanced/com/example/dr/dasmap2/MainActivity$override.class
+CHANGED,/home/dr/dev/git/in4254/SmartPhoneSensing-2015/NSEW_newstep/app/build/intermediates/transforms/instantRun/debug/folders/4000/5/enhanced/com/android/tools/fd/runtime/AppPatchesLoaderImpl.class

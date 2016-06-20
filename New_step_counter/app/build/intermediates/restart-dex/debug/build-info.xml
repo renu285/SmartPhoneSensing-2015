@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<instant-run
+    abi="armeabi-v7a,armeabi"
+    api-level="21"
+    density="xxhdpi"
+    format="7"
+    timestamp="4004440688723"
+    token="3182159983417418278" >
+
+    <task
+        name="javac"
+        duration="482" />
+    <task
+        name="instant-run-dex"
+        duration="0" />
+    <task
+        name="instant-run-transform"
+        duration="50" />
+    <task
+        name="verifier"
+        duration="4" />
+
+    <artifact
+        location="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/outputs/apk/app-debug.apk"
+        type="MAIN" />
+
+    <build timestamp="4004440688723" >
+        <artifact
+            location="/home/dr/dev/git/in4254/SmartPhoneSensing-2015/New_step_counter/app/build/outputs/apk/app-debug.apk"
+            type="MAIN" />
+    </build>
+
+</instant-run>
